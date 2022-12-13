@@ -1,39 +1,40 @@
-// const yargs = require('yargs');
-// const { hideBin } = require('yargs/helpers');
+const contacts = require('./contacts');
 
-const argv = require("yargs").argv;
+const { Command } = require('commander');
+const program = new Command();
 
-// const {
-//   listContacts,
-//   getContactById,
-//   removeContact,
-//   addContact,
-// } = require("./contacts");
+//настроим commander
+program
+  .option("-a, --action <type>", "choose action")
+  .option("-i, --id <type>", "user id")
+  .option("-n, --name <type>", "user name")
+  .option("-e, --email <type>", "user email")
+  .option("-p, --phone <type>", "user phone");
 
-const  invokeAction = async ({ action, id, name, email, phone })=> {
+program.parse(process.argv);
+
+const argv = program.opts();
+
+const  invokeAction = async ({ action, id, name, email, phone }) => {
   switch (action) {
     case "list":     
-        const response = await listContacts();
-        console.table("ListContacts:", response);      
+        const response = await contacts.listContacts();    
+      console.table(response)
       break;
 
     case "get":      
-        const getcontact = await getContactById(id);
-        contact
-          ? console.table(`Contact with id "${id}": `, getcontact)
-          : console.log(`"Contact with id "${id}": not found"`);      
+      const getContact = await contacts.getContactById(id);        
+      console.table(getContact);
       break;
 
     case "add":     
-        const addNewContact = await addContact(name, email, phone);
-        console.table(`Result: `, addNewContact);      
+        const addNewContact = await contacts.addContact(name, email, phone);
+        console.table(addNewContact);      
       break;
 
     case "remove":     
-        const deleteContact = await removeContact(id);
-        deleteContact
-          ? console.table(deleteContact)
-          : console.log(`"Contact with id "${id}": not found"`);     
+      const deleteContact = await contacts.removeContact(id);        
+      console.table(deleteContact);
       break;
 
     default:
